@@ -1,38 +1,92 @@
 # База данных для бара "Кооператив"
 
-Это база данных для управления заказами, сотрудниками и скаладом 
+# Типовые запросы:
+Получение всех заказов клиента
 
 ```SQL
--- Получение списка всех доступных напитков в баре
-SELECT * FROM Drinks;
-
-
--- Добавление нового напитка в меню бара
-
-INSERT INTO drinks ( name, price, type) VALUES ('New Drink', 100.0, 'alcohol');
-
-
-
--- Обновление цены существующего напитка
-UPDATE Drinks SET price = 12.0 WHERE name = 'Old Drink'
-AND DrinkID > 0;
-
--- Получение списка наиболее популярных напитков в баре за определенный период
-SELECT drinks.name, SUM(orders.quantity) as total_sold, SUM(orders.quantity * drinks.price) as total_revenue
-FROM orders
-JOIN drinks ON orders.DrinkID = drinks.DrinkID
-WHERE orders.OrderDateTime >= NOW() - INTERVAL 1 MONTH
-GROUP BY drinks.name
-ORDER BY total_revenue DESC
-LIMIT 5;
-
-
-
--- Получение списка заказов, которые еще не были выполнены барменом
-SELECT e.Name AS EmployeeName, r.RoleName 
-FROM Employees e 
-JOIN Roles r ON e.Roles_RoleID = r.RoleID;
+SELECT o.id, o.order_date, d.title AS drink_title, od.quantity AS drink_quantity, 
+       (d.price * od.quantity) AS total_price
+FROM Orders o
+JOIN Ordered_Drinks od ON o.id = od.orders_id
+JOIN Drinks d ON od.drinks_id = d.id
+JOIN Customers c ON o.customers_id = c.id
+WHERE c.name = 'Иван';  -- Можно заменить на нужного клиента
 ```
+Получение списка всех напитков с их количеством на складе
+```SQL
+SELECT title, quantity, price
+FROM Drinks
+WHERE quantity > 0;  -- Показывать только те напитки, которые есть в наличии
+```
+Получение общей суммы заказа по номеру заказа
+```SQL
+SELECT o.id, SUM(d.price * od.quantity) AS total_price
+FROM Orders o
+JOIN Ordered_Drinks od ON o.id = od.orders_id
+JOIN Drinks d ON od.drinks_id = d.id
+WHERE o.id = 1  -- Замените на нужный id заказа
+GROUP BY o.id;
+```
+
+Список заказов, выполненных барменом
+```SQL
+SELECT o.id, o.order_date, c.name AS client_name, SUM(d.price * od.quantity) AS total_price
+FROM Orders o
+JOIN Ordered_Drinks od ON o.id = od.orders_id
+JOIN Drinks d ON od.drinks_id = d.id
+JOIN Customers c ON o.customers_id = c.id
+WHERE o.staff_id = (SELECT id FROM Staff WHERE login = 'barmen')  -- Заменить на логин бармена
+GROUP BY o.id, o.order_date, client_name;
+```
+
+Обновление количества напитков на складе после продажи
+```SQL
+START TRANSACTION;
+-- Уменьшение количества напитка на складе
+UPDATE Drinks
+SET quantity = quantity - 1  -- Например, продан 1 напиток
+WHERE id = 1;  -- Замените на id нужного напитка
+
+-- Добавление информации в таблицу заказов
+INSERT INTO Ordered_Drinks (orders_id, drinks_id, quantity)
+VALUES (1, 1, 2);  -- Замените на актуальные данные
+
+COMMIT;
+```
+
+# Роли и пользователи
+```SQL
+-- Создание роли для админа
+CREATE ROLE IF NOT EXISTS `admin`;
+
+-- Разрешение на просмотр, добавление и редактирования работников.
+GRANT SELECT, INSERT, UPDATE ON `staff` TO `admin`;
+
+-- Разрешение на просмотр, добавление и удаление заказаных напитков.
+GRANT SELECT, INSERT, DELETE ON `ordered_drinks` TO `admin`;
+
+-- Разрешение на просмотр, добавление и удаление вложений для заказов.
+GRANT SELECT, INSERT, DELETE ON `orders` TO `admin`;
+
+-- Разрешение на все действия над напитками
+GRANT ALL PRIVILEGES  ON `drinks` TO `admin`;
+
+-- Разрешение на просмотр, добавление и удаление клиентов.
+GRANT SELECT, INSERT, DELETE ON `customers` TO `admin`;
+
+-- Создание пользователя:
+CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY '1488';
+
+-- Назначение роли пользователю:
+GRANT `admin` TO 'admin'@'localhost';
+
+-- Устанавливается роль admin как роль по умолчанию для пользователя 'admin':
+SET DEFAULT ROLE `admin` TO 'admin'@'localhost';
+
+-- Сохранение изменений
+FLUSH PRIVILEGES;
+```
+
 Технические требования:
 
 + Чтобы все запустить надо открыть MySQL Workbanch
