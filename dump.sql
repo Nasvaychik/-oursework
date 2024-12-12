@@ -1,8 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `bar` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `bar`;
+CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET utf8mb3 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `mydb`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
--- Host: localhost    Database: bar
+-- Host: localhost    Database: mydb
 -- ------------------------------------------------------
 -- Server version	8.0.35
 
@@ -25,12 +25,14 @@ DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
-  ` CustomerID` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255) NOT NULL,
-  `Email` varchar(255) DEFAULT NULL,
-  `Phone` varchar(20) NOT NULL,
-  PRIMARY KEY (` CustomerID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `phone` varchar(45) NOT NULL,
+  `e-mail` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `phone_UNIQUE` (`phone`),
+  UNIQUE KEY `e-mail_UNIQUE` (`e-mail`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +41,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'Кирилл','89201805526@mail.ru','89201805526'),(2,'Степа','stepan@mail.ru','89040071792'),(3,'Гоша','goshan1488@mail.ru','89001191820');
+INSERT INTO `customers` VALUES (1,'Виссарион','79201805526','test1@gmail.com'),(2,'Эрнест','79998887766','test2@gmail.com'),(3,'Вадим','79998887765','test3@gmail.com');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,13 +53,12 @@ DROP TABLE IF EXISTS `drinks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `drinks` (
-  `DrinkID` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `price` int NOT NULL,
-  `ingredients` text,
-  PRIMARY KEY (`DrinkID`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(45) NOT NULL,
+  `price` decimal(10,0) NOT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,37 +67,73 @@ CREATE TABLE `drinks` (
 
 LOCK TABLES `drinks` WRITE;
 /*!40000 ALTER TABLE `drinks` DISABLE KEYS */;
-INSERT INTO `drinks` VALUES (1,'коровка','alcohol',190,'6 ст. сахара, 1 ст.л. какао, 100 г сливочного масла, 2 стакана молока, 3 яйца'),(2,'личи банан','alcohol',190,'водка, мякоть ягод личи,  сахар, вода'),(3,'хреновуха','alcohol',190,'корень хрена, мёд, водка, лимонный сок, имбирь'),(4,'лемонграсс ментол','alcohol',150,NULL),(5,'лимончелло','alcohol',190,'лимоны, сахар, водка, спирт, молоко'),(6,'укропная','alcohol',150,'зонтики укропа, водка, чеснок, сахар, свежие листики укропа'),(7,'копченая груша','alcohol',150,'копченая груша, водка, апельсиновая цедра, изюм, сахар'),(8,'кинза цитрус','alcohol',150,NULL),(9,'брусника мята','alcohol',190,'водка, брусника, мята, мёд, сахар'),(10,'васабиха','alcohol',190,'текила, апельсиновый ликер, сок лимона, васаби, соль, лед, лайм'),(11,'New Drink','alcohol',100,NULL),(12,'New Drink','alcohol',100,NULL);
+INSERT INTO `drinks` VALUES (1,'Бонжус',250,13),(2,'Кола 0.3',200,30),(3,'Матта',500,50),(4,'Кродино',500,50);
 /*!40000 ALTER TABLE `drinks` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `employees`
+-- Temporary view structure for view `orderdetails`
 --
 
-DROP TABLE IF EXISTS `employees`;
+DROP TABLE IF EXISTS `orderdetails`;
+/*!50001 DROP VIEW IF EXISTS `orderdetails`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `orderdetails` AS SELECT 
+ 1 AS `CustomerName`,
+ 1 AS `OrderID`,
+ 1 AS `OrderDate`,
+ 1 AS `DrinkTitle`,
+ 1 AS `DrinkQuantity`,
+ 1 AS `DrinkPrice`,
+ 1 AS `TotalPrice`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `ordered_drinks`
+--
+
+DROP TABLE IF EXISTS `ordered_drinks`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employees` (
-  `EmployeeID` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(255) NOT NULL,
-  `Email` varchar(255) NOT NULL,
-  `Phone` varchar(20) NOT NULL,
-  `Roles_RoleID` int NOT NULL,
-  PRIMARY KEY (`EmployeeID`),
-  KEY `fk_Employees_Roles1_idx` (`Roles_RoleID`),
-  CONSTRAINT `fk_Employees_Roles1` FOREIGN KEY (`Roles_RoleID`) REFERENCES `mydb`.`roles` (`RoleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `ordered_drinks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantity` int DEFAULT NULL,
+  `drinks_id` int NOT NULL,
+  `orders_id` int NOT NULL,
+  PRIMARY KEY (`id`,`drinks_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `employees`
+-- Dumping data for table `ordered_drinks`
 --
 
-LOCK TABLES `employees` WRITE;
-/*!40000 ALTER TABLE `employees` DISABLE KEYS */;
-/*!40000 ALTER TABLE `employees` ENABLE KEYS */;
+LOCK TABLES `ordered_drinks` WRITE;
+/*!40000 ALTER TABLE `ordered_drinks` DISABLE KEYS */;
+INSERT INTO `ordered_drinks` VALUES (1,1,1,1),(2,1,2,1),(3,1,3,2),(4,1,4,2),(5,2,1,1),(6,2,1,5),(7,2,1,6),(8,2,1,1);
+/*!40000 ALTER TABLE `ordered_drinks` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `UpdateDrinkStockAfterOrder` AFTER INSERT ON `ordered_drinks` FOR EACH ROW BEGIN
+    -- Обновление количества напитков в таблице drinks после вставки в Ordered_Drinks
+    UPDATE drinks
+    SET quantity = quantity - NEW.quantity
+    WHERE id = NEW.drinks_id;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `orders`
@@ -106,23 +143,12 @@ DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `orders` (
-  `OrderID` int NOT NULL AUTO_INCREMENT,
-  `CustomerID` int DEFAULT NULL,
-  `DrinkID` int NOT NULL,
-  `Quantity` int NOT NULL,
-  `OrderDateTime` datetime DEFAULT NULL,
-  `TotalPrice` int NOT NULL,
-  `Customers_ CustomerID` int NOT NULL,
-  `Drinks_ DrinkID` int NOT NULL,
-  `Employees_EmployeeID` int NOT NULL,
-  PRIMARY KEY (`OrderID`),
-  KEY `fk_Orders_Customers_idx` (`Customers_ CustomerID`),
-  KEY `fk_Orders_Drinks1_idx` (`Drinks_ DrinkID`),
-  KEY `fk_Orders_Employees1_idx` (`Employees_EmployeeID`),
-  CONSTRAINT `fk_Orders_Customers` FOREIGN KEY (`Customers_ CustomerID`) REFERENCES `mydb`.`customers` (` CustomerID`),
-  CONSTRAINT `fk_Orders_Drinks1` FOREIGN KEY (`Drinks_ DrinkID`) REFERENCES `mydb`.`drinks` (` DrinkID`),
-  CONSTRAINT `fk_Orders_Employees1` FOREIGN KEY (`Employees_EmployeeID`) REFERENCES `mydb`.`employees` (`EmployeeID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `order_date` datetime DEFAULT NULL,
+  `customers_id` int NOT NULL,
+  `staff_id` int NOT NULL,
+  PRIMARY KEY (`id`,`customers_id`,`staff_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,77 +157,46 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,NULL,1,1),(2,NULL,1,2),(3,NULL,2,1),(4,NULL,2,2),(5,NULL,1,2),(6,NULL,1,2);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `UpdateDrinkQuantity` AFTER INSERT ON `orders` FOR EACH ROW BEGIN
-    DECLARE DrinkID INT;
-    DECLARE Quantity INT;
-
-    SET DrinkID = NEW.DrinkID;
-    SET Quantity = NEW.Quantity;
-
-    UPDATE drinks SET quantity = quantity - quantity WHERE id = drink_id;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `roles`
+-- Table structure for table `staff`
 --
 
-DROP TABLE IF EXISTS `roles`;
+DROP TABLE IF EXISTS `staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `roles` (
-  `RoleID` int NOT NULL AUTO_INCREMENT,
-  `RoleName` varchar(100) NOT NULL,
-  PRIMARY KEY (`RoleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `staff` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `role` varchar(45) NOT NULL,
+  `login` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `login_UNIQUE` (`login`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `roles`
+-- Dumping data for table `staff`
 --
 
-LOCK TABLES `roles` WRITE;
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Бармен'),(2,'Официант'),(3,'Администратор'),(4,'Повар'),(5,'Уборщик');
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+LOCK TABLES `staff` WRITE;
+/*!40000 ALTER TABLE `staff` DISABLE KEYS */;
+INSERT INTO `staff` VALUES (1,'Кирилл','Администратор','Cooper','1488'),(2,'Максим','Бармен','Maxik','228');
+/*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Temporary view structure for view `topcustomers`
---
-
-DROP TABLE IF EXISTS `topcustomers`;
-/*!50001 DROP VIEW IF EXISTS `topcustomers`*/;
-SET @saved_cs_client     = @@character_set_client;
-/*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `topcustomers` AS SELECT 
- 1 AS `name`,
- 1 AS `num_orders`*/;
-SET character_set_client = @saved_cs_client;
-
---
--- Dumping events for database 'bar'
+-- Dumping events for database 'mydb'
 --
 
 --
--- Dumping routines for database 'bar'
+-- Dumping routines for database 'mydb'
 --
-/*!50003 DROP FUNCTION IF EXISTS `GetDrinkPrice` */;
+/*!50003 DROP FUNCTION IF EXISTS `GetTotalOrderPrice` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -211,21 +206,25 @@ SET character_set_client = @saved_cs_client;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` FUNCTION `GetDrinkPrice`(drink_id INT) RETURNS decimal(10,2)
+CREATE DEFINER=`root`@`localhost` FUNCTION `GetTotalOrderPrice`(order_id INT) RETURNS decimal(10,2)
     DETERMINISTIC
 BEGIN
-    DECLARE price DECIMAL(10,2);
-
-    SELECT price INTO price FROM drinks WHERE id = drink_id;
-
-    RETURN price;
+    DECLARE total_price DECIMAL(10,2);
+    
+    -- Вычисление общей стоимости заказа
+    SELECT SUM(od.quantity * d.price) INTO total_price
+    FROM Ordered_Drinks od
+    JOIN Drinks d ON od.drinks_id = d.id
+    WHERE od.orders_id = order_id;
+    
+    RETURN total_price;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `AddOrderAndUpdateDrinkQuantity` */;
+/*!50003 DROP PROCEDURE IF EXISTS `AddOrder` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -235,152 +234,42 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `AddOrderAndUpdateDrinkQuantity`(
-  IN CustomerID INT,
-  IN DrinkID INT,
-  IN Quantity INT
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddOrder`(
+    IN p_id_clients INT,   -- Входной параметр: id клиента
+    IN p_id_workers INT,   -- Входной параметр: id сотрудника (бармен)
+    IN p_id_drinks INT,    -- Входной параметр: id напитка
+    IN p_quantity INT      -- Входной параметр: количество напитков
 )
 BEGIN
-    -- Объявление переменных
-    DECLARE drinkPrice DECIMAL(10,2);
-    DECLARE availableQuantity INT;
-    DECLARE totalPrice DECIMAL(10,2);
-
-    SELECT price INTO drinkPrice FROM drinks WHERE id = drinkId;
-    SELECT available_quantity INTO availableQuantity FROM drinks WHERE id = drinkId;
-
-    -- Начало транзакции
-    START TRANSACTION;
-
-    -- Проверка доступности напитка
-    IF availableQuantity >= quantity THEN
-        -- Добавление заказа
-        INSERT INTO orders (customer_id, drink_id, quantity, order_datetime, total_price)
-        VALUES (customerId, drinkId, quantity, NOW(), quantity * drinkPrice);
-
-        -- Обновление количества доступных напитков
-        UPDATE drinks SET available_quantity = available_quantity - quantity WHERE id = drinkId;
-
-        -- Фиксирование транзакции
+    -- Переменные для хранения id заказа
+    DECLARE v_id_orders INT;
+    IF NOT EXISTS (SELECT 1 FROM staff WHERE id = p_id_workers) THEN
+		 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ошибка: работник не найден!';
+	END IF;
+         
+         
+	IF NOT EXISTS (SELECT 1 FROM drinks WHERE id = p_id_drinks) THEN
+		 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ошибка: напиток не найден!';
+	END IF;
+    
+    -- Шаг 1: Проверка существования клиента
+    IF EXISTS (SELECT 1 FROM Customers WHERE id = p_id_clients) THEN
+        -- Шаг 2: Вставка нового заказа
+        INSERT INTO Orders (customers_id, staff_id)
+        VALUES (p_id_clients, p_id_workers);
+        
+        -- Получаем id только что добавленного заказа
+        SET v_id_orders = LAST_INSERT_ID();
+        
+        -- Шаг 3: Вставка напитков в заказ
+        INSERT INTO Ordered_Drinks (orders_id, drinks_id, quantity)
+        VALUES (v_id_orders, p_id_drinks, p_quantity);
+        
+        -- Если все успешно, коммитим транзакцию
         COMMIT;
-
-        SELECT 'Заказ успешно добавлен и количество доступных напитков обновлено';
     ELSE
-        -- Отмена транзакции
-        ROLLBACK;
-
-        SELECT 'Недостаточно доступного количества напитка для выполнения заказа';
-    END IF;
-
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `GetMostPopularDrinks` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `GetMostPopularDrinks`()
-BEGIN
-    DECLARE drink_name VARCHAR(255);
-    DECLARE num_orders INT;
-    DECLARE done BOOLEAN DEFAULT FALSE;
-    DECLARE cur CURSOR FOR SELECT drink_name, COUNT(*) AS num_orders FROM orders GROUP BY drink_name ORDER BY num_orders DESC LIMIT 5;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    OPEN cur;
-    read_loop: LOOP
-        FETCH cur INTO drink_name, num_orders;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-        SELECT drink_name, num_orders;
-    END LOOP;
-    CLOSE cur;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `MyBarProcedure` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `MyBarProcedure`()
-BEGIN
-    DECLARE mostPopularDrink VARCHAR(255);
-    DECLARE totalRevenue DECIMAL(10,2);
-    DECLARE numOrders INT;
-
-    -- Получение самого популярного напитка в баре
-    SELECT drink_name INTO mostPopularDrink
-    FROM (
-        SELECT drink_name, COUNT(*) as num_orders
-        FROM orders
-        GROUP BY drink_name
-        ORDER BY num_orders DESC
-        LIMIT 1
-    ) tmp;
-
-    -- Получение общей выручки от продаж напитков в баре
-    SELECT SUM(price) INTO totalRevenue
-    FROM orders;
-
-    -- Получение количества заказов в баре
-    SELECT COUNT(*) INTO numOrders
-    FROM orders;
-
-    -- Вывод результатов
-    SELECT mostPopularDrink, totalRevenue, numOrders;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `PlaceOrder` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PlaceOrder`(IN order_id INT, IN customer_id INT, IN drink_id INT, IN quantity INT)
-BEGIN
-    DECLARE drink_price DECIMAL(10,2);
-    DECLARE total_cost DECIMAL(10,2);
-    DECLARE drink_quantity INT;
-
-    SELECT price INTO drink_price FROM drinks WHERE id = drink_id;
-    SELECT quantity INTO drink_quantity FROM drinks WHERE id = drink_id;
-
-    IF quantity > drink_quantity THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough drink quantity in stock';
-    ELSE
-        SET total_cost = drink_price * quantity;
-
-        INSERT INTO orders(id, customer_id, drink_id, quantity, total_cost)
-        VALUES(order_id, customer_id, drink_id, quantity, total_cost);
-
-        UPDATE drinks SET quantity = quantity - quantity WHERE id = drink_id;
+        -- Если клиент не существует, откатываем транзакцию
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ошибка: клиент не найден!';
     END IF;
 END ;;
 DELIMITER ;
@@ -390,10 +279,10 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Final view structure for view `topcustomers`
+-- Final view structure for view `orderdetails`
 --
 
-/*!50001 DROP VIEW IF EXISTS `topcustomers`*/;
+/*!50001 DROP VIEW IF EXISTS `orderdetails`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -402,7 +291,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `topcustomers` AS select `customers`.`Name` AS `name`,count(`orders`.`OrderID`) AS `num_orders` from (`customers` join `orders` on((`orders`.`CustomerID` = `orders`.`CustomerID`))) group by `customers`.`Name` order by `num_orders` desc limit 5 */;
+/*!50001 VIEW `orderdetails` AS select `c`.`name` AS `CustomerName`,`o`.`id` AS `OrderID`,`o`.`order_date` AS `OrderDate`,`d`.`title` AS `DrinkTitle`,`od`.`quantity` AS `DrinkQuantity`,`d`.`price` AS `DrinkPrice`,(`od`.`quantity` * `d`.`price`) AS `TotalPrice` from (((`customers` `c` join `orders` `o` on((`c`.`id` = `o`.`customers_id`))) join `ordered_drinks` `od` on((`o`.`id` = `od`.`orders_id`))) join `drinks` `d` on((`od`.`drinks_id` = `d`.`id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -416,4 +305,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-19  7:48:21
+-- Dump completed on 2024-12-12 22:29:11
